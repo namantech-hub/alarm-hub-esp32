@@ -2,7 +2,7 @@
 #include <TinyGsm.h>
 
 #define LED_TOGGLE_INTERVAL 500
-#define CHECK_NW_SIGNAL_INTERVAL 5000
+#define CHECK_NW_SIGNAL_INTERVAL 10000
 
 Ticker tGsmStatusLed;
 extern TinyGsm modem;
@@ -36,6 +36,5 @@ void updateNetworkLed()
             digitalWrite(NW_STATUS_LED, LOW);
         }
         prevMilis = milis;
-        // Serial.println("Signal quality: " + String(modem.getSignalQuality()));
     }
 }

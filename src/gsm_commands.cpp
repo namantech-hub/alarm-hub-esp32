@@ -1,6 +1,27 @@
 #include <main.h>
+#include <TinyGsmClient.h>
+#include <StreamDebugger.h>
 
-extern TinyGsm modem;
+StreamDebugger debugger(SerialAT, SerialMon);
+TinyGsm modem(debugger);
+
+void initGsm()
+{
+    SerialMon.println("Initializing modem...");
+    SerialAT.begin(UART_BAUD, SERIAL_8N1, PIN_RX, PIN_TX);
+    modem.init();
+    String modemInfo = modem.getModemInfo();
+    SerialMon.print("Modem Info: ");
+    SerialMon.println(modemInfo);
+    modem.sendAT("+CMGF=1"); // Set SMS to text mode
+    modem.waitResponse();
+    modem.sendAT("+CNMI=1,2,0,1,0"); // SMS details
+    modem.waitResponse();
+    modem.sendAT("E1");
+    modem.waitResponse();
+    modem.sendAT("+CLIP=1"); // Enable caller ID notification
+    modem.waitResponse();
+}
 
 void phoneCmd(String szFrom, String szCmd)
 {
@@ -164,5 +185,68 @@ void processPhoneCmd(String szFrom, String szCmd)
     {
         bSendUnknownCode = false;
         modem.sendSMS(szFrom, "Debug disabled");
+    }
+}
+
+void checkGsmSerial()
+{
+    // Check if SMS is available
+    if (SerialAT.available())
+    {
+        String smsData = SerialAT.readStringUntil('\n');
+        SerialMon.print("Received data: ");
+        SerialMon.println(smsData);
+        if (smsData.indexOf("+CMT:") != -1) // New SMS received
+        {
+            String senderNumber = smsData.substring(smsData.indexOf("\"") + 1, smsData.indexOf("\",", smsData.indexOf("\"") + 1));
+            // Remove country code if present
+            if (senderNumber.startsWith("+91"))
+            {
+                senderNumber = senderNumber.substring(3);
+            }
+            String message = SerialAT.readStringUntil('\n'); // Read the actual message
+            SerialMon.print("SMS from ");
+            SerialMon.print(senderNumber);
+            SerialMon.print(": ");
+            SerialMon.println(message);
+            processPhoneCmd(senderNumber, message);
+        }
+        // Also check if call & get caller's number
+        else if (smsData.indexOf("RING") != -1)
+        {
+            // Incoming call detected, get caller number
+            modem.sendAT("+CLCC"); // List current calls
+            String response;
+            modem.waitResponse(1000, response);
+            if (response.indexOf("+CLCC:") != -1)
+            {
+                int numStart = response.indexOf("\"") + 1;
+                int numEnd = response.indexOf("\"", numStart);
+                String callerNumber = response.substring(numStart, numEnd);
+                // Remove country code if present
+                if (callerNumber.startsWith("+91"))
+                {
+                    callerNumber = callerNumber.substring(3);
+                }
+                SerialMon.print("Incoming call from: ");
+                SerialMon.println(callerNumber);
+                processPhoneCmd(callerNumber, "call");
+            }
+        }
+    }
+
+    // Send boot message if not sent already and 30 seconds have passed since boot
+    static bool bootMsgSent = 0;
+    if (!bootMsgSent && millis() > 30000)
+    {
+        // Send boot message
+        int bootCnt = pref.getInt("bootCnt", 0);
+        bootCnt++;
+        pref.putInt("bootCnt", bootCnt);
+        String number = pref.getString("admin");
+        String message = "github.com/namantech-hub/alarm-hub Booted " + String(bootCnt) + " times.";
+        modem.sendSMS(number, message);
+        SerialMon.println("Sent boot message to " + number + " : " + message);
+        bootMsgSent = true;
     }
 }

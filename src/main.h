@@ -9,18 +9,20 @@
 #include <Preferences.h>
 #include <RCSwitch.h>
 
-#define NW_STATUS_LED 7
-// #define SIGNAL_LED 7
-#define ARMED_LED 6
+#define NW_STATUS_LED 4
+#define SIGNAL_LED 17
+#define ARMED_LED 18
 
 #define UART_BAUD 9600
-#define PIN_TX 16
-#define PIN_RX 17
-#define RST_PIN 15
+#define PIN_TX 26
+#define PIN_RX 33
 
-#define RFPIN 15
+#define RFPIN 14
 #define SIRENPIN 5
 #define BTN 0
+
+#define SerialMon Serial
+#define SerialAT Serial1
 
 // main.cpp
 extern Preferences pref;
@@ -30,7 +32,8 @@ void intrusion();
 void panic();
 
 // gsm_commands.cpp
-void processPhoneCmd(String szFrom, String szCmd);
+void initGsm();
+void checkGsmSerial();
 
 // state.cpp
 extern bool bSendUnknownCode;
@@ -41,3 +44,6 @@ void updateState(uint32_t rfdata);
 // nwLedUpdate.cpp
 void initNetworkLed();
 void updateNetworkLed();
+
+// ota.cpp
+void setupOTA();
