@@ -55,11 +55,11 @@ void setup()
   // Init RF Receiver
   for (int i = 0; i < 5; i++)
   {
-    digitalWrite(SIGNAL_LED, LOW);
-    digitalWrite(ARMED_LED, LOW);
-    delay(500);
     digitalWrite(SIGNAL_LED, HIGH);
     digitalWrite(ARMED_LED, HIGH);
+    delay(500);
+    digitalWrite(SIGNAL_LED, LOW);
+    digitalWrite(ARMED_LED, LOW);
     delay(500);
   }
 
