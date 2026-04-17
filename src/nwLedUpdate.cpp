@@ -6,6 +6,7 @@
 
 Ticker tGsmStatusLed;
 extern TinyGsm modem;
+int signalQuality = 0;
 
 void toggleNwLed()
 {
@@ -25,7 +26,7 @@ void updateNetworkLed()
 
     if ((milis - prevMilis) > CHECK_NW_SIGNAL_INTERVAL)
     {
-        int signalQuality = modem.getSignalQuality();
+        signalQuality = modem.getSignalQuality();
         if (signalQuality >= 99 || signalQuality < 10)
         {
             tGsmStatusLed.attach_ms(LED_TOGGLE_INTERVAL, toggleNwLed);

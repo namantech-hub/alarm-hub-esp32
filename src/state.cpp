@@ -1,6 +1,7 @@
 #include <main.h>
 
 extern TinyGsm modem;
+extern int signalQuality;
 
 bool bArmed = false;
 // Send unknown RF code to admin
@@ -29,16 +30,6 @@ void sirenOff()
 void sirenOn()
 {
     digitalWrite(SIRENPIN, HIGH);
-}
-
-void sendSms(char iNo, String message)
-{
-    String index = "n" + String(iNo);
-    String number = pref.getString(index.c_str());
-    if (number.length() == 10)
-    {
-        modem.sendSMS(number, message);
-    }
 }
 
 void arm()
@@ -163,7 +154,7 @@ void updateState(uint32_t rfdata)
         if (bSendUnknownCode && !bCodeFound && iSeq > '6')
         {
             String number = pref.getString("admin");
-            String message = String("Unknown Code:") + String(rfdata, HEX);
+            String message = String("Unknown Code:") + String(rfdata, HEX) + "\nSignal Quality: " + String(signalQuality);
             modem.sendSMS(number, message);
             nextMillis = millis() + 10000;
         }
@@ -186,14 +177,14 @@ void updateState(uint32_t rfdata)
                     if (iSeq < '6')
                         modem.sendSMS(number, "System is armed");
                     else
-                        modem.sendSMS(number, "System is armed " + szLastMsg);
+                        modem.sendSMS(number, "System is armed\nBy: " + szLastMsg + "\nSignal Quality: " + String(signalQuality));
                     nextMillis = millis() + 10000;
                     break;
                 case state_types_t::DISARM:
                     if (iSeq < '6')
                         modem.sendSMS(number, "System is disarmed");
                     else
-                        modem.sendSMS(number, "System is disarmed " + szLastMsg);
+                        modem.sendSMS(number, "System is disarmed\nBy: " + szLastMsg + "\nSignal Quality: " + String(signalQuality));
                     nextMillis = millis() + 10000;
                     break;
                 case state_types_t::INTRUSION:
@@ -204,14 +195,14 @@ void updateState(uint32_t rfdata)
                         modem.callNumber(number);
                     }
                     else
-                        modem.sendSMS(number, "Intrusion detected " + szLastMsg);
+                        modem.sendSMS(number, "Intrusion detected\nBy: " + szLastMsg + "\nSignal Quality: " + String(signalQuality));
                     nextMillis = millis() + 30000;
                     break;
                 case state_types_t::PANIC:
                     if (iSeq < '6')
                         modem.sendSMS(number, "Panic alarm activated");
                     else
-                        modem.sendSMS(number, "Panic alarm activated " + szLastMsg);
+                        modem.sendSMS(number, "Panic alarm activated\nBy: " + szLastMsg + "\nSignal Quality: " + String(signalQuality));
                     nextMillis = millis() + 30000;
                     break;
                 }

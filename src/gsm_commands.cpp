@@ -5,6 +5,8 @@
 StreamDebugger debugger(SerialAT, SerialMon);
 TinyGsm modem(debugger);
 
+extern int signalQuality;
+
 void initGsm()
 {
     SerialMon.println("Initializing modem...");
@@ -125,6 +127,8 @@ void sensorCmd(String szFrom, String szCmd)
 void getState(String szFrom)
 {
     String payload = bArmed ? "Armed" : "Disarmed";
+    payload += "\nSignal Quality: " + String(signalQuality);
+
     modem.sendSMS(szFrom, payload);
 }
 
@@ -174,17 +178,17 @@ void processPhoneCmd(String szFrom, String szCmd)
         disarm();
     else if (szCmd.startsWith("panic"))
         panic();
-    else if (szCmd.startsWith("state"))
+    else if (szCmd.startsWith("state") || szCmd.startsWith("status"))
         getState(szFrom);
     else if (szCmd.startsWith("debug"))
     {
         bSendUnknownCode = true;
-        modem.sendSMS(szFrom, "Debug enabled");
+        modem.sendSMS(szFrom, "Debug enabled\n Signal Quality: " + String(signalQuality));
     }
     else if (szCmd.startsWith("nodebug"))
     {
         bSendUnknownCode = false;
-        modem.sendSMS(szFrom, "Debug disabled");
+        modem.sendSMS(szFrom, "Debug disabled\n Signal Quality: " + String(signalQuality));
     }
 }
 
@@ -245,6 +249,7 @@ void checkGsmSerial()
         pref.putInt("bootCnt", bootCnt);
         String number = pref.getString("admin");
         String message = "github.com/namantech-hub/alarm-hub Booted " + String(bootCnt) + " times.";
+        message += "\nSignal Quality: " + String(signalQuality);
         modem.sendSMS(number, message);
         SerialMon.println("Sent boot message to " + number + " : " + message);
         bootMsgSent = true;
