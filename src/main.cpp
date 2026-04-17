@@ -7,9 +7,9 @@ RCSwitch rfin = RCSwitch();
 
 Ticker tRfLed;
 
-void turnOffRfLed()
+void turnOnRfLed()
 {
-  digitalWrite(SIGNAL_LED, HIGH);
+  digitalWrite(SIGNAL_LED, LOW);
 }
 
 const char *ssid = "namantech";
@@ -77,8 +77,8 @@ void loop()
   unsigned long uCode = 0;
   if (rfin.available())
   {
-    digitalWrite(SIGNAL_LED, LOW);
-    tRfLed.attach(1, turnOffRfLed);
+    digitalWrite(SIGNAL_LED, HIGH);
+    tRfLed.attach(1, turnOnRfLed);
     SerialMon.print("Received ");
     uCode = rfin.getReceivedValue();
     SerialMon.print(uCode);
