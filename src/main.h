@@ -10,15 +10,15 @@
 #include <RCSwitch.h>
 
 #define NW_STATUS_LED 4
-#define SIGNAL_LED 17
-#define ARMED_LED 18
+#define SIGNAL_LED 18
+#define ARMED_LED 17
 
 #define UART_BAUD 9600
 #define PIN_TX 26
 #define PIN_RX 33
 
 #define RFPIN 14
-#define SIRENPIN 5
+#define SIRENPIN 21
 #define BTN 0
 
 #define SerialMon Serial
