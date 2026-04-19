@@ -9,6 +9,8 @@
 #include <Preferences.h>
 #include <RCSwitch.h>
 
+#define FW_VERSION "2.0.0"
+
 #define NW_STATUS_LED 4
 #define SIGNAL_LED 18
 #define ARMED_LED 17

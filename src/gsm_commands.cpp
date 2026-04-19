@@ -248,7 +248,7 @@ void checkGsmSerial()
         bootCnt++;
         pref.putInt("bootCnt", bootCnt);
         String number = pref.getString("admin");
-        String message = "github.com/namantech-hub/alarm-hub Booted " + String(bootCnt) + " times.";
+        String message = "alarm-hub-esp32 v" + String(FW_VERSION) + " booted " + String(bootCnt) + " times.";
         message += "\nSignal Quality: " + String(signalQuality);
         modem.sendSMS(number, message);
         SerialMon.println("Sent boot message to " + number + " : " + message);
