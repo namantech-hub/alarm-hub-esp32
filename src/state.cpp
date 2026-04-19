@@ -102,7 +102,6 @@ void updateState(uint32_t rfdata)
     if (rfdata /*&& prevRfData != rfdata*/)
     {
         Serial.printf("Rf Data:%X\n", rfdata);
-        prevRfData = rfdata;
         bool bCodeFound = false;
         for (char i = '1'; i <= '9'; i++)
         {
@@ -151,13 +150,14 @@ void updateState(uint32_t rfdata)
         Serial.printf("Code found: %d, debug: %d, iSeq: %c\n", bCodeFound, bSendUnknownCode, iSeq);
 
         // If unknwon code & code is not found
-        if (bSendUnknownCode && !bCodeFound && iSeq > '6')
+        if (bSendUnknownCode && !bCodeFound && iSeq > '6' && rfdata != prevRfData && rfdata > 0x0F)
         {
             String number = pref.getString("admin");
             String message = String("Unknown Code:") + String(rfdata, HEX) + "\nSignal Quality: " + String(signalQuality);
             modem.sendSMS(number, message);
             nextMillis = millis() + 10000;
         }
+        prevRfData = rfdata;
     }
 
     if (iSeq < '7')
