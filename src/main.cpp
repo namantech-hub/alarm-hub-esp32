@@ -30,6 +30,15 @@ void setup()
   }
   bArmed = pref.getBool("armed");
 
+#if defined(BHARATPI)
+  SerialMon.println("BharatPi detected");
+  pinMode(PWR_PIN, OUTPUT);
+  digitalWrite(PWR_PIN, LOW);
+  delay(1000);
+  digitalWrite(PWR_PIN, HIGH);
+  delay(1000);
+#endif
+
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   SerialMon.println("Connecting to WiFi");

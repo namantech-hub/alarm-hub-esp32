@@ -27,6 +27,8 @@ void updateNetworkLed()
     if ((milis - prevMilis) > CHECK_NW_SIGNAL_INTERVAL)
     {
         signalQuality = modem.getSignalQuality();
+        SerialMon.print("Signal quality: ");
+        SerialMon.println(signalQuality);
         if (signalQuality >= 99 || signalQuality < 10)
         {
             tGsmStatusLed.attach_ms(LED_TOGGLE_INTERVAL, toggleNwLed);
