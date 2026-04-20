@@ -154,7 +154,7 @@ void processPhoneCmd(String szFrom, String szCmd)
     if (!bKnownNumber)
     {
         // forward msg reveived from unknown number
-        String payload = "From: " + szFrom + "\n Cmd: " + szCmd;
+        String payload = "From: " + szFrom + "\nCmd: " + szCmd;
         Serial.println(payload);
         modem.sendSMS(pref.getString("admin"), payload);
         return;
@@ -183,12 +183,12 @@ void processPhoneCmd(String szFrom, String szCmd)
     else if (szCmd.startsWith("debug"))
     {
         bSendUnknownCode = true;
-        modem.sendSMS(szFrom, "Debug enabled\n Signal Quality: " + String(signalQuality));
+        modem.sendSMS(szFrom, "Debug enabled\nSignal Quality: " + String(signalQuality));
     }
     else if (szCmd.startsWith("nodebug"))
     {
         bSendUnknownCode = false;
-        modem.sendSMS(szFrom, "Debug disabled\n Signal Quality: " + String(signalQuality));
+        modem.sendSMS(szFrom, "Debug disabled\nSignal Quality: " + String(signalQuality));
     }
 }
 
